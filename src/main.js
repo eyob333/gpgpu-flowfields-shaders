@@ -2,9 +2,13 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
+import {GPUComputationRenderer} from 'three/addons/misc/GPUComputationRenderer.js'
 import GUI from 'lil-gui'
 import particlesVertexShader from './shaders/particles/vertex.glsl'
 import particlesFragmentShader from './shaders/particles/fragment.glsl'
+import gpgpuParticleShader from './shaders/gpgpu/particles.glsl'
+
+
 
 /**
  * Base
@@ -79,13 +83,47 @@ renderer.setPixelRatio(sizes.pixelRatio)
 debugObject.clearColor = '#29191f'
 renderer.setClearColor(debugObject.clearColor)
 
+
+/**
+ * BaseGeometry
+ */
+const BaseGeometry = {}
+BaseGeometry.instance = new THREE.SphereGeometry(3)
+
+BaseGeometry.count = BaseGeometry.instance.attributes.position.count
+
+
+/**
+ * GpuCompute
+ */
+const gpgpu = {}
+gpgpu.size = Math.ceil(Math.sqrt(BaseGeometry.count))
+gpgpu.computation = new GPUComputationRenderer(gpgpu.size, gpgpu.size, renderer)
+const baseParticleTexture = gpgpu.computation.createTexture()
+
+//Particle Variable
+gpgpu.particlesVariable = gpgpu.computation.addVariable('uParticle', gpgpuParticleShader, baseParticleTexture)
+gpgpu.computation.setVariableDependencies(gpgpu.particlesVariable, [gpgpu.particlesVariable])
+
+//init
+gpgpu.computation.init()
+
+//debug
+gpgpu.debug = new THREE.Mesh(
+    new THREE.PlaneGeometry(3, 3),
+    new THREE.MeshBasicMaterial({
+        map: gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture
+    })
+
+)
+gpgpu.debug.position.x = 3
+scene.add(gpgpu.debug)
+
+
 /**
  * Particles
  */
 const particles = {}
-
-// Geometry
-particles.geometry = new THREE.SphereGeometry(3)
 
 // Material
 particles.material = new THREE.ShaderMaterial({
@@ -99,7 +137,7 @@ particles.material = new THREE.ShaderMaterial({
 })
 
 // Points
-particles.points = new THREE.Points(particles.geometry, particles.material)
+particles.points = new THREE.Points(BaseGeometry.instance, particles.material)
 scene.add(particles.points)
 
 /**
@@ -122,6 +160,9 @@ const tick = () =>
     
     // Update controls
     controls.update()
+
+    //gpgpu update
+    gpgpu.computation.compute()
 
     // Render normal scene
     renderer.render(scene, camera)
