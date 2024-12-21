@@ -1,12 +1,12 @@
-import glsl from 'vite-plugin-glsl';
-import { defineConfig } from 'vite';
+// import glsl from 'vite-plugin-glsl';
+// import { defineConfig } from 'vite';
 
-export default defineConfig({
-  plugins: [glsl()],
-  build: {
-    target: 'esnext',
-    chunkSizeWarningLimit: 1600,
+// export default defineConfig({
+//   plugins: [glsl()],
+//   build: {
+//     target: 'esnext',
+//     chunkSizeWarningLimit: 1600,
     
-  }
-});
+//   }
+// });
 
