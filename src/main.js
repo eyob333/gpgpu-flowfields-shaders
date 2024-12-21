@@ -99,7 +99,23 @@ BaseGeometry.count = BaseGeometry.instance.attributes.position.count
 const gpgpu = {}
 gpgpu.size = Math.ceil(Math.sqrt(BaseGeometry.count))
 gpgpu.computation = new GPUComputationRenderer(gpgpu.size, gpgpu.size, renderer)
+
+//baseParticles
 const baseParticleTexture = gpgpu.computation.createTexture()
+
+for(let i = 0; i < BaseGeometry.count; i++){
+
+    const i3 = i * 3
+    const i4 = i * 4
+
+    //position beased on gemetry
+    baseParticleTexture.image.data[i4 + 0] = BaseGeometry.instance.attributes.position.array[i3 + 0]
+    baseParticleTexture.image.data[i4 + 1] = BaseGeometry.instance.attributes.position.array[i3 + 1]
+    baseParticleTexture.image.data[i4 + 2] = BaseGeometry.instance.attributes.position.array[i3 + 2]
+    baseParticleTexture.image.data[i4 + 3] =  0
+
+}
+
 
 //Particle Variable
 gpgpu.particlesVariable = gpgpu.computation.addVariable('uParticle', gpgpuParticleShader, baseParticleTexture)
@@ -114,7 +130,6 @@ gpgpu.debug = new THREE.Mesh(
     new THREE.MeshBasicMaterial({
         map: gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture
     })
-
 )
 gpgpu.debug.position.x = 3
 scene.add(gpgpu.debug)
@@ -132,12 +147,17 @@ particles.material = new THREE.ShaderMaterial({
     uniforms:
     {
         uSize: new THREE.Uniform(0.4),
-        uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio))
+        uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
+        uParticleTextue: new THREE.Uniform()
     }
 })
 
+//Geometry
+particles.geometry = new THREE.BufferGeometry()
+particles.geometry.setDrawRange(0, BaseGeometry.count)
+
 // Points
-particles.points = new THREE.Points(BaseGeometry.instance, particles.material)
+particles.points = new THREE.Points(particles.geometry, particles.material)
 scene.add(particles.points)
 
 /**
@@ -163,6 +183,7 @@ const tick = () =>
 
     //gpgpu update
     gpgpu.computation.compute()
+    particles.material.uniforms.uParticleTextue = gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture
 
     // Render normal scene
     renderer.render(scene, camera)
