@@ -20,6 +20,7 @@ const debugObject = {}
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
+
 // Scene
 const scene = new THREE.Scene()
 
@@ -29,6 +30,11 @@ dracoLoader.setDecoderPath('/draco/')
 
 const gltfLoader = new GLTFLoader()
 gltfLoader.setDRACOLoader(dracoLoader)
+
+//models
+const shipModel = await gltfLoader.loadAsync('./model.glb')
+console.log(shipModel)
+
 
 /**
  * Sizes
@@ -88,7 +94,7 @@ renderer.setClearColor(debugObject.clearColor)
  * BaseGeometry
  */
 const BaseGeometry = {}
-BaseGeometry.instance = new THREE.SphereGeometry(3)
+BaseGeometry.instance = shipModel.scene.children[0].geometry
 
 BaseGeometry.count = BaseGeometry.instance.attributes.position.count
 
@@ -146,7 +152,7 @@ particles.material = new THREE.ShaderMaterial({
     fragmentShader: particlesFragmentShader,
     uniforms:
     {
-        uSize: new THREE.Uniform(0.4),
+        uSize: new THREE.Uniform(0.07),
         uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
         uParticleTextue: new THREE.Uniform()
     }
@@ -154,6 +160,7 @@ particles.material = new THREE.ShaderMaterial({
 
 //Geometry
 const particlesUvArray = new Float32Array(BaseGeometry.count * 2)
+const sizesArray = new Float32Array(BaseGeometry.count)
 
 for ( let y = 0; y < gpgpu.size; y++ ){
     for( let x = 0; x < gpgpu.size; x++){
@@ -165,6 +172,8 @@ for ( let y = 0; y < gpgpu.size; y++ ){
 
         particlesUvArray[i2 + 0] = uvX
         particlesUvArray[i2 + 1] = uvY
+
+        sizesArray[i] = Math.random()
     }
 }
 
@@ -172,6 +181,8 @@ particles.geometry = new THREE.BufferGeometry()
 particles.geometry.setDrawRange(0, BaseGeometry.count)
 
 particles.geometry.setAttribute('aUvParticles', new THREE.BufferAttribute(particlesUvArray, 2))
+particles.geometry.setAttribute('aSize', new THREE.BufferAttribute(sizesArray, 1))
+particles.geometry.setAttribute('aColor', BaseGeometry.instance.attributes.color)
 
 // Points
 particles.points = new THREE.Points(particles.geometry, particles.material)
