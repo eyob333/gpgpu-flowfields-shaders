@@ -33,7 +33,6 @@ gltfLoader.setDRACOLoader(dracoLoader)
 
 //models
 const shipModel = await gltfLoader.loadAsync('./model.glb')
-console.log(shipModel)
 
 
 /**
@@ -95,7 +94,6 @@ renderer.setClearColor(debugObject.clearColor)
  */
 const BaseGeometry = {}
 BaseGeometry.instance = shipModel.scene.children[0].geometry
-
 BaseGeometry.count = BaseGeometry.instance.attributes.position.count
 
 
@@ -118,7 +116,7 @@ for(let i = 0; i < BaseGeometry.count; i++){
     baseParticleTexture.image.data[i4 + 0] = BaseGeometry.instance.attributes.position.array[i3 + 0]
     baseParticleTexture.image.data[i4 + 1] = BaseGeometry.instance.attributes.position.array[i3 + 1]
     baseParticleTexture.image.data[i4 + 2] = BaseGeometry.instance.attributes.position.array[i3 + 2]
-    baseParticleTexture.image.data[i4 + 3] =  0
+    baseParticleTexture.image.data[i4 + 3] =  Math.random()
 
 }
 
@@ -126,6 +124,12 @@ for(let i = 0; i < BaseGeometry.count; i++){
 //Particle Variable
 gpgpu.particlesVariable = gpgpu.computation.addVariable('uParticle', gpgpuParticleShader, baseParticleTexture)
 gpgpu.computation.setVariableDependencies(gpgpu.particlesVariable, [gpgpu.particlesVariable])
+
+//unifors
+gpgpu.particlesVariable.material.uniforms.uTime = new THREE.Uniform(0)
+gpgpu.particlesVariable.material.uniforms.uDeltaTime = new THREE.Uniform(0)
+
+gpgpu.particlesVariable.material.uniforms.uBase = new THREE.Uniform(baseParticleTexture)
 
 //init
 gpgpu.computation.init()
@@ -210,6 +214,8 @@ const tick = () =>
     controls.update()
 
     //gpgpu update
+    gpgpu.particlesVariable.material.uniforms.uTime.value = elapsedTime
+    gpgpu.particlesVariable.material.uniforms.uDeltaTime.value = deltaTime
     gpgpu.computation.compute()
     particles.material.uniforms.uParticleTextue.value = gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture
 
