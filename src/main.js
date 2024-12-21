@@ -4,9 +4,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import {GPUComputationRenderer} from 'three/addons/misc/GPUComputationRenderer.js'
 import GUI from 'lil-gui'
-import particlesVertexShader from './shaders/particles/vertex.glsl'
-import particlesFragmentShader from './shaders/particles/fragment.glsl'
-import gpgpuParticleShader from './shaders/gpgpu/particles.glsl'
+import particlesVertexShader from './shaders/particles/vertex.glsl?raw'
+import particlesFragmentShader from './shaders/particles/fragment.glsl?raw'
+import gpgpuParticleShader from './shaders/gpgpu/particles.glsl?raw'
 
 
 
