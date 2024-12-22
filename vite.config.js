@@ -11,12 +11,12 @@ export default defineConfig({
     target: 'esnext',
     chunkSizeWarningLimit: 1600,
   },
-  // plugins: [glsl()],
   esbuild: {
     supported: {
       'top-level-await': true
     }
-  }
+  },
+  plugins: [glsl()]
 });
 
 

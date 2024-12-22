@@ -4,9 +4,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import {GPUComputationRenderer} from 'three/addons/misc/GPUComputationRenderer.js'
 import GUI from 'lil-gui'
-import particlesVertexShader from './shaders/particles/vertex.glsl?raw'
-import particlesFragmentShader from './shaders/particles/fragment.glsl?raw'
-import gpgpuParticleShader from './shaders/gpgpu/particles.glsl?raw'
+import particlesVertexShader from './shaders/particles/vertex.glsl'
+import particlesFragmentShader from './shaders/particles/fragment.glsl'
+import gpgpuParticleShader from './shaders/gpgpu/particles.glsl'
 
 
 
@@ -14,7 +14,7 @@ import gpgpuParticleShader from './shaders/gpgpu/particles.glsl?raw'
  * Base
  */
 // Debug
-const gui = new GUI({ width: 340 })
+const gui = new GUI({ width: 340 }).close()
 const debugObject = {}
 
 // Canvas
@@ -34,20 +34,6 @@ gltfLoader.setDRACOLoader(dracoLoader)
 //models
 const shipModel = await gltfLoader.loadAsync('./model.glb')
 
-// Function to load the model
-// async function loadModel() {
-//     try {
-//       const gltf = await gltfLoader.loadAsync('./model.glb');
-//       console.log('Model loaded successfully', gltf);
-//       shipModel = gltf
-//       // Process the model here (e.g., use gltf.scene)
-//     } catch (error) {
-//       console.error('Error loading model:', error);
-//     }
-//   }
-  
-//   // Call the loadModel function
-//   loadModel();
 
 
 
