@@ -11,18 +11,12 @@ export default defineConfig({
     target: 'esnext',
     chunkSizeWarningLimit: 1600,
   },
-  plugins: [glsl()],
+  // plugins: [glsl()],
   esbuild: {
-  supported: {
-    'top-level-await': true
+    supported: {
+      'top-level-await': true
+    }
   }
-  // build: {
-  //   target: 'esnext',
-  //   
-  //   outDir: '../dist', // Output in the dist/ folder
-  //   emptyOutDir: true, // Empty the folder first
-  //   sourcemap: true, // Add sourcemap
-  // }
 });
 
 
