@@ -34,6 +34,22 @@ gltfLoader.setDRACOLoader(dracoLoader)
 //models
 const shipModel = await gltfLoader.loadAsync('./model.glb')
 
+// Function to load the model
+// async function loadModel() {
+//     try {
+//       const gltf = await gltfLoader.loadAsync('./model.glb');
+//       console.log('Model loaded successfully', gltf);
+//       shipModel = gltf
+//       // Process the model here (e.g., use gltf.scene)
+//     } catch (error) {
+//       console.error('Error loading model:', error);
+//     }
+//   }
+  
+//   // Call the loadModel function
+//   loadModel();
+
+
 
 /**
  * Sizes
@@ -162,7 +178,7 @@ particles.material = new THREE.ShaderMaterial({
     fragmentShader: particlesFragmentShader,
     uniforms:
     {
-        uSize: new THREE.Uniform(0.06),
+        uSize: new THREE.Uniform(0.07),
         uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
         uParticleTextue: new THREE.Uniform()
     }
